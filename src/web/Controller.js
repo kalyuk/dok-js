@@ -39,7 +39,7 @@ export default class Controller extends BaseController {
   render(template, data = {}, code = 200, headers = {}) {
     const viewPath = path.join(this.viewPath, this.id, template + ".pug");
     const compiledFunction = pug.compileFile(viewPath, {
-      cache: App().isDevMode(),
+      cache: !App().isDevMode(),
       compileDebug: false,
       debug: false,
       basedir: App().getViewPath(),
