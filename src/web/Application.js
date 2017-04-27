@@ -4,9 +4,11 @@ import Request from "./Request";
 import Response from "./Response";
 import Session from "./Session";
 import Cookie from "./Cookie";
+import StaticModule from "../modules/static/StaticModule";
 
 export default class Application extends BaseApplication {
   preInit() {
+    this.register("modules", "static", {instance: StaticModule});
     this.register("services", "Cookie", {instance: Cookie});
     this.register("services", "Session", {instance: Session});
     this.register("services", "Response", {instance: Response});
