@@ -1,1 +1,6 @@
-module.exports.default = require("./dist/app");
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = require("./dist/app").default;
