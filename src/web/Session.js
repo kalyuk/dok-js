@@ -4,7 +4,7 @@ import Hashids from "hashids";
 export default class Session extends Service {
 
   static defaultOptions = {
-    salt: "9idjdowjr8fj30dj39",
+    salt: "9idjdowjr8fj30dj39" + (new Date()).getTime(),
     sessionKey: "$application",
     alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
     modelPath: null
@@ -20,6 +20,10 @@ export default class Session extends Service {
 
   getSessionCookie(user) {
     return this.sessionKey + "=" + this.createSession(user) + "; Path=/; HttpOnly;";
+  }
+
+  clerSessionCookie() {
+    return this.sessionKey + "=; Path=/; expires=" + Date.now(1) + ";"
   }
 
   async initSession(ctx) {
