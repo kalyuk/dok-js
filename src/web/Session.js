@@ -49,9 +49,9 @@ export default class Session extends Service {
       return session.getValue(sessionKey, key) || false;
     };
 
-    ctx.session.clearSession = function () {
+    ctx.session.clearSession = () => {
       session.remove(sessionKey);
-      ctx.cookie.remove(sessionKey)
+      ctx.cookie.remove(this.getSessionKey())
     }
   }
 
