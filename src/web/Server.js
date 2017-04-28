@@ -75,9 +75,9 @@ Open up http://${this.host}:${this.port}/ in your browser.`;
     const Session = App().getService("Session");
     const Response = App().getService("Response");
     const Cookie = App().getService("Cookie");
-    Cookie.parse(ctx);
-    await Session.initSession(ctx);
+    Cookie.initialize(ctx);
+    Session.initialize(ctx);
     const result = await callback(ctx);
-    Response.render(result, response);
+    Response.render(ctx, result, response);
   }
 }

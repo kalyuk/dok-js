@@ -56,7 +56,7 @@ export default class Response extends BaseResponse {
     return null;
   }
 
-  render(content, response) {
+  render(ctx, content, response) {
     let result = _.defaultsDeep(content, this.config);
 
     if (content.filePath) {
@@ -84,6 +84,18 @@ export default class Response extends BaseResponse {
         });
       }
     });
+
+    if (ctx.cookie.__.new.length) {
+      ctx.cookie.__.new.forEach(cookie => {
+        response.setHeader("Set-Cookie", cookie);
+      });
+    }
+
+    if (ctx.cookie.__.remove.length) {
+      ctx.cookie.__.remove.forEach(cookie => {
+        response.setHeader("Set-Cookie", cookie);
+      });
+    }
 
     response.statusCode = result.state;
     response.setHeader("Content-Length", Buffer.byteLength(data) + "");

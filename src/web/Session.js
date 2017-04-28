@@ -1,42 +1,57 @@
 import Service from "../base/Service";
-import Hashids from "hashids";
+import App from "../app";
 
 export default class Session extends Service {
 
   static defaultOptions = {
-    salt: "9idjdowjr8fj30dj39" + (new Date()).getTime(),
     sessionKey: "$application",
-    alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-    modelPath: null
+    alphabet: "abcdefghijklmnopqrstuvwxyz-+|$%@#1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    provider: "MemorySession"
   };
 
-  init() {
-    this.hashids = new Hashids(this.salt, 32, this.alphabet);
+  createSession(ctx) {
+    const sessionKey = this.generateSessionKey();
+    ctx.cookie.addCookie(this.getSessionKey(), sessionKey, {
+      path: "/"
+    });
+    return sessionKey;
   }
 
-  createSession(user) {
-    return this.hashids.encode(user.id);
+  getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  getSessionCookie(user) {
-    return this.sessionKey + "=" + this.createSession(user) + "; Path=/; HttpOnly;";
+  generateSessionKey() {
+    let str = "";
+    for (let i = 0; i < 32; i++) {
+      str += this.alphabet[this.getRandomInt(0, this.alphabet.length - 1)];
+    }
+    return str;
   }
 
-  clerSessionCookie() {
-    return this.sessionKey + "=; Path=/; expires=" + Date.now(1) + ";"
+  getSessionKey() {
+    return this.sessionKey;
   }
 
-  async initSession(ctx) {
-    const session = ctx.cookie[this.sessionKey];
-    if (session) {
-      const decode = this.hashids.decode(session);
-      if (decode && decode.length) {
-        const Model = require(this.modelPath).default;
-        const user = await Model.find({where: {id: decode[0]}});
-        if (user) {
-          ctx.user = user;
-        }
-      }
+  initialize(ctx) {
+    ctx.session = {};
+
+    const session = App().getService(this.provider);
+
+    const sessionKey = (ctx.cookie[this.getSessionKey()]) ?
+      ctx.cookie[this.getSessionKey()] : this.createSession(ctx);
+
+    ctx.session.set = function (key, value) {
+      session.setValue(sessionKey, key, value);
+    };
+
+    ctx.session.get = function (key) {
+      return session.getValue(sessionKey, key) || false;
+    };
+
+    ctx.session.clearSession = function () {
+      session.remove(sessionKey);
+      ctx.cookie.remove(sessionKey)
     }
   }
 
