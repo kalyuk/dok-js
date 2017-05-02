@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import Component from "./Component";
 import {ucFirst} from "../helpers/string";
+import App from "../app";
 
 export default class Module extends Component {
   __controllers = {};
@@ -21,7 +22,10 @@ export default class Module extends Component {
     if (!this.__controllers[controllerName]) {
       const controllerPath = this.getControllerPath(controllerName);
       if (fs.existsSync(controllerPath)) {
-        this.__controllers[controllerName] = new (require(controllerPath).default)(this.getViewPath());
+
+        const viewPath = App().template ? App().getViewPath() + "/" + App().template + "/modules/" + this.id
+          : this.getViewPath();
+        this.__controllers[controllerName] = new (require(controllerPath).default)(viewPath);
         return this.__controllers[controllerName];
       }
       throw new Error(`Controller "${controllerName}" in module "${this.constructor.name}" not found`);
