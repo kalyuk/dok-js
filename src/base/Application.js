@@ -5,6 +5,7 @@
 import _ from "lodash";
 import Module from "./Module";
 import path from "path";
+import Storage from "./Storage";
 import Router from "./Router";
 import ErrorHandler from "./ErrorHandler";
 import Database from "./Database";
@@ -42,6 +43,7 @@ export default class Application extends Module {
     this.loadConfig();
     this.register("services", "Security", {instance: Security});
     this.register("services", "ErrorHandler", {instance: ErrorHandler});
+    this.register("services", "Storage", {instance: Storage});
     this.register("services", "Router", {instance: Router});
     this.register("services", "Sequelize", {instance: Sequelize});
     this.register("services", "Database", {instance: Database});
