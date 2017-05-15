@@ -2,16 +2,7 @@ import Service from "../base/Service";
 import cookie from "cookie";
 
 export default class Cookie extends Service {
-
-  static defaultOptions = {
-    autoStart: true
-  };
-
   initialize(ctx) {
-
-    if (!this.autoStart) {
-      return;
-    }
 
     ctx.cookie = {};
     if (ctx.headers.cookie) {

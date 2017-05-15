@@ -35,10 +35,11 @@ export default class Session extends Service {
   }
 
   initialize(ctx) {
+    ctx.session = {};
+
     if (!this.autoStart) {
       return;
     }
-    ctx.session = {};
 
     const session = App().getService(this.provider);
 
