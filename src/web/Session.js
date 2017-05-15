@@ -6,7 +6,8 @@ export default class Session extends Service {
   static defaultOptions = {
     sessionKey: "$application",
     alphabet: "abcdefghijklmnopqrstuvwxyz-+|$%@#1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    provider: "MemorySession"
+    provider: "MemorySession",
+    autoStart: true
   };
 
   createSession(ctx) {
@@ -34,6 +35,9 @@ export default class Session extends Service {
   }
 
   initialize(ctx) {
+    if (!this.autoStart) {
+      return;
+    }
     ctx.session = {};
 
     const session = App().getService(this.provider);
@@ -51,8 +55,8 @@ export default class Session extends Service {
 
     ctx.session.clearSession = () => {
       session.remove(sessionKey);
-      ctx.cookie.remove(this.getSessionKey())
-    }
+      ctx.cookie.remove(this.getSessionKey());
+    };
   }
 
 }
