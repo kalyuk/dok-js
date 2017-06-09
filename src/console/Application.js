@@ -1,24 +1,41 @@
-import BaseApplication from "../base/Application";
-import MigrationModule from "../modules/migration/MigrationModule";
-import Request from "../base/Request";
-import Response from "./Response";
+import {Application as BaseApplication} from '../base/Application';
+import {ResponseService} from '../console/ResponseService';
+import {MigrateModule} from '../modules/migrate/MigrateModule';
 
-export default class Application extends BaseApplication {
-  preInit() {
-    this.register("services", "Request", {instance: Request});
-    this.register("services", "Response", {instance: Response});
-    this.register("modules", "migration", {instance: MigrationModule});
-  }
+export class Application extends BaseApplication {
+  static options = {
+    services: {
+      RouterService: {
+        options: {
+          routes: {
+            'COMMAND migrate:<actionName:up|down|create>': {
+              moduleName: 'migrate',
+              controllerName: 'index'
+            }
+          }
+        }
+      },
+      ResponseService: {
+        func: ResponseService
+      }
+    },
+    modules: {
+      migrate: {
+        func: MigrateModule
+      }
+    }
+  };
 
-  init() {
-    super.init();
-    const ctx = {
-      url: this.args.route,
+  async run() {
+    let ctx = {
       headers: {},
-      method: "COMMAND"
+      method: 'COMMAND',
+      url: this.arguments.route
     };
-    this.getService("Request").run(ctx).then(result => {
-      this.getService("Response").render(result);
-    });
+
+    ctx.content = await this.runRoute(ctx);
+
+    this.getService('ResponseService').render(ctx);
   }
+
 }

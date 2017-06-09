@@ -1,29 +1,32 @@
-export default class Component {
+import _ from 'lodash';
+import {getApplication} from '../../index';
 
-  static defaultOptions = {};
+export class Component {
+  static options = {};
 
-  /**
-   * @param {Object} config
-   */
-  constructor(config) {
-    Object.keys(config).forEach(key => {
-      this[key] = config[key];
-    });
+  constructor(config = {}) {
+    this.config = _.defaultsDeep(config, this.deepConfig(this.constructor));
   }
 
-  /**
-   * @return {string}
-   */
-  className() {
-    return this.constructor.name;
-  }
-
-  preInit() {
+  $inject() {
 
   }
 
   init() {
-    this.preInit();
+    getApplication().log(0, `Component ${this.className()} initialize`);
   }
 
+  className() {
+    return this.constructor.name;
+  }
+
+  deepConfig(constructor) {
+    let config = {...constructor.options} || {};
+    // eslint-disable-next-line
+    if (constructor.__proto__.name) {
+      // eslint-disable-next-line
+      config = _.defaultsDeep(config, this.deepConfig(constructor.__proto__));
+    }
+    return config;
+  }
 }

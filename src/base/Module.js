@@ -1,86 +1,63 @@
-import path from "path";
-import fs from "fs";
-import Component from "./Component";
-import {ucFirst} from "../helpers/string";
-import App from "../app";
+import {Component} from './Component';
+import * as path from 'path';
+import * as fs from 'fs';
+import {ucFirst} from '../helpers/string';
+import {getFnParamNames} from '../helpers/fn';
+import {getApplication} from '../../index';
 
-export default class Module extends Component {
-  __controllers = {};
-
-  init() {
-    if (!this.id) {
-      this.id = this.className().replace("Module", "").toLowerCase();
+export class Module extends Component {
+  static options = {
+    controller: {
+      dirName: 'controllers',
+      ext: '.js'
     }
-    super.init();
+  };
+
+  basePath = '';
+  controllers = {};
+
+  getId() {
+    return this.config.id || this.id || this.className().replace('Module', '').toLowerCase();
   }
 
-  /**
-   * @param {string} controllerName
-   * @return {Controller}
-   */
-  createController(controllerName) {
-    if (!this.__controllers[controllerName]) {
-      const controllerPath = this.getControllerPath(controllerName);
-      if (fs.existsSync(controllerPath)) {
-
-        const viewPath = App().template ? App().getViewPath() + "/" + App().template + "/modules/" + this.id
-          : this.getViewPath();
-        this.__controllers[controllerName] = new (require(controllerPath).default)(viewPath);
-        return this.__controllers[controllerName];
-      }
-      throw new Error(`Controller "${controllerName}" in module "${this.constructor.name}" not found`);
-    }
-    return this.__controllers[controllerName];
+  getPath() {
+    return this.config.basePath || this.basePath || '';
   }
 
-  /**
-   * @return {String}
-   */
-  getBasePath() {
-    return this.basePath;
-  }
-
-  /**
-   * @param {string} controllerName
-   * @return {string}
-   */
   getControllerPath(controllerName) {
-    return path.join(this.getBasePath(), "controllers", `${ucFirst(controllerName)}Controller.js`);
+    return path.join(
+      this.getPath(),
+      this.config.controller.dirName,
+      controllerName + this.config.controller.ext);
   }
 
-  /**
-   * @return {string}
-   */
-  getViewPath() {
-    if (!this.viewPath) {
-      return path.join(this.getBasePath(), "views");
-    }
-
-    return this.viewPath;
-  }
-
-  async runBehaviors(ctx, controller) {
-    const behaviors = controller.getBehaviors(ctx);
-    for (let i = 0; i < behaviors.length; i++) {
-      const behavior = await behaviors[i].behavior(ctx, behaviors[i].options);
-      if (behavior) {
-        return behavior;
+  getController(controllerName) {
+    if (!this.controllers[controllerName]) {
+      const fullControllerName = ucFirst(controllerName) + 'Controller';
+      const controllerPath = this.getControllerPath(fullControllerName);
+      if (fs.existsSync(controllerPath)) {
+        this.controllers[controllerName] = new (require(controllerPath)[fullControllerName])();
+        this.controllers[controllerName].init(this);
+        const args = [];
+        getFnParamNames(this.controllers[controllerName].$inject).forEach(serviceName => {
+          if (serviceName && serviceName.length) {
+            args.push(getApplication().getService(serviceName));
+          }
+        });
+        this.controllers[controllerName].$inject(...args);
+      } else {
+        throw new Error(`Controller ${controllerName} in ${this.getId()} not found`);
       }
     }
-    return false;
+
+    return this.controllers[controllerName];
   }
 
-  async runAction(ctx) {
-    const {controllerName, actionName} = ctx.route;
-    const controller = this.createController(controllerName);
-    if (!controller[actionName]) {
-      throw new Error(`Action "${actionName}" in controller "${controllerName}" not found`);
+  runAction(ctx) {
+    const controller = this.getController(ctx.route.controllerName);
+    if (!controller[ctx.route.actionName + 'Action']) {
+      throw new Error(`Method ${ctx.route.actionName}Action in controller '${ctx.route.controllerName}' not found`);
     }
-
-    const result = await this.runBehaviors(ctx, controller);
-    if (result) {
-      return result;
-    }
-    return controller[actionName](ctx);
+    return controller[ctx.route.actionName + 'Action'](ctx);
   }
 }

@@ -1,64 +1,25 @@
-import BaseController from "../base/Controller";
-import pug from "pug";
-import path from "path";
-import _ from "lodash";
-import App from "../app";
-export default class Controller extends BaseController {
+import {Controller as BaseController} from '../base/Controller';
+import {ResponseService} from './ResponseService';
 
-  renderFile(filePath, code = 200, headers = {}) {
-    return {
-      headers,
-      filePath: filePath,
-      state: code
-    };
-  }
+export class Controller extends BaseController {
 
-  render(template, data = {}, code = 200, headers = {}) {
-    const viewPath = path.join(this.viewPath, this.id, template + ".pug");
-    const compiledFunction = pug.compileFile(viewPath, {
-      cache: !App().isDevMode(),
-      compileDebug: false,
-      debug: false,
-      basedir: App().getViewPath(),
-      inlineRuntimeFunctions: true
-    });
-    const params = _.defaultsDeep(data, {
-      meta: {
-        title: ""
-      }
-    });
-    const $headers = Object.assign(headers, {
-      "Content-Type": "text/html"
-    });
+  renderJSON(status, content, code = 'success', message = '') {
+    const data = {};
+
+    if (status > 300 && code === 'success') {
+      throw new Error('Wrong response code');
+    }
+
+    data.code = code;
+    data.message = message;
+    data[status < 300 ? 'data' : 'errors'] = content;
 
     return {
-      headers: $headers,
-      body: compiledFunction(params),
-      state: code
-    };
-  }
-
-  renderJSON(json, code = 200, headers = {}) {
-    return {
-      headers,
-      body: {
-        code,
-        data: json
+      body: JSON.stringify(data),
+      headers: {
+        'Content-type': ResponseService.types.json
       },
-      state: code
-    };
-  }
-
-  redirectTo(url, code = 301, headers = {}) {
-    const $headers = Object.assign(headers, {
-      Location: url,
-      "Content-Type": "plain/text"
-    });
-
-    return {
-      headers: $headers,
-      body: "",
-      state: code
+      status
     };
   }
 

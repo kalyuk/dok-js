@@ -1,5 +1,8 @@
-import Component from "./Component";
+import {Component} from './Component';
 
-export default class Service extends Component {
+export class Service extends Component {
 
+  run() {
+
+  }
 }

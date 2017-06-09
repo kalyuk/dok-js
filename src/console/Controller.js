@@ -1,8 +1,12 @@
-import BaseController from "../base/Controller";
-export default class Controller extends BaseController {
-  render(body) {
+import {Controller as BaseController} from '../base/Controller';
+
+export class Controller extends BaseController {
+
+  render(status, content) {
     return {
-      body
+      body: content,
+      headers: {},
+      status
     };
   }
 }

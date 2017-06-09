@@ -390,7 +390,7 @@
     // require quotes around object literal property names (off by default)
     "quotes": [
       1,
-      "double"
+      "single"
     ],
     // specify whether double or single quotes should be used
     "semi": [

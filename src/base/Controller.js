@@ -1,11 +1,10 @@
-export default class Controller {
-  getBehaviors() {
-    return [];
+export class Controller {
+
+  init(module) {
+    this.module = module;
   }
 
-  constructor(viewPath) {
-    this.id = this.constructor.name.split("Controller")[0].toLowerCase();
-    this.viewPath = viewPath;
-  }
+  $inject() {
 
+  }
 }
