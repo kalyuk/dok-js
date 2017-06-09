@@ -1,10 +1,8 @@
-import _ from 'lodash';
 import {getApplication} from '../../index';
 
-export function SequelizeModel(options = {}) {
-  const params = _.defaultsDeep({db: 'db'}, options);
+export function SequelizeModel(schema, options = {}, dbName = 'db') {
   return function (target) {
-    return getApplication().getService('DatabaseService').getInstance(params.db)
-      .defineModel(target.name, options.schema, params, target);
+    return getApplication().getService('DatabaseService').getInstance(dbName)
+      .defineModel(target.name, schema, options, target);
   };
 }
