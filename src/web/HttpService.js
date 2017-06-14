@@ -77,12 +77,12 @@ Open up http://${this.config.host}:${this.config.port}/ in your browser.`;
       ctx.content = await callback(ctx);
       this.response.render(response, ctx);
     } catch (e) {
-      this.logger.render(LOG_LEVEL.ERROR, e.message);
+      this.logger.render(LOG_LEVEL.ERROR, e.code, e.message);
       ctx.content = {
         headers: {
           'Content-Type': ResponseService.types.html
         },
-        status: 500,
+        status: e.code && Number.isInteger(e.code) ? e.code : 500,
         body: e.message
       };
       this.response.render(response, ctx);

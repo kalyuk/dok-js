@@ -53,8 +53,10 @@ export class RouterService extends Service {
       return false;
     });
 
-    if (!ctx.route.controllerName) {
-      throw new Error(`Route: ${ctx.method} ${ctx.url} not found`);
+    if (!ctx.route) {
+      const error = new Error(`Route: ${ctx.method} ${ctx.url} not found`);
+      error.code = 404;
+      throw error;
     }
   }
 }
