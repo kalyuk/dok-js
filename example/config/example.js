@@ -32,6 +32,10 @@ export default function () {
               'GET /json': {
                 actionName: 'json',
                 controllerName: 'index'
+              },
+              'GET /admin': {
+                actionName: 'index',
+                controllerName: 'admin'
               }
             }
           }

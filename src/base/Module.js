@@ -53,11 +53,34 @@ export class Module extends Component {
     return this.controllers[controllerName];
   }
 
-  runAction(ctx) {
+  async runBehaviors(controller, ctx) {
+    const behaviors = controller.getBehaviors();
+    let result = false;
+    for (let i = 0; i < behaviors.length; i++) {
+      if (result) {
+        i = behaviors.length;
+        continue;
+      }
+
+      if (!behaviors[i].actions || behaviors[i].actions.indexOf(ctx.route.actionName) !== -1) {
+        result = await behaviors[i].behavior(ctx, behaviors[i]);
+      }
+    }
+    return result;
+  }
+
+  async runAction(ctx) {
     const controller = this.getController(ctx.route.controllerName);
     if (!controller[ctx.route.actionName + 'Action']) {
       throw new Error(`Method ${ctx.route.actionName}Action in controller '${ctx.route.controllerName}' not found`);
     }
+
+    const result = await this.runBehaviors(controller, ctx);
+
+    if (result) {
+      return result;
+    }
+
     return controller[ctx.route.actionName + 'Action'](ctx);
   }
 }

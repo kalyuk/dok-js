@@ -3,6 +3,10 @@ import {ResponseService} from './ResponseService';
 
 export class Controller extends BaseController {
 
+  getBehaviors() {
+    return [];
+  }
+
   renderJSON(status, content, code = 'success', message = '') {
     const data = {};
 
