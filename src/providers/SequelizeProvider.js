@@ -9,6 +9,10 @@ export class SequelizeProvider extends Sequelize {
     if (!this.$models[modelName]) {
       this.$models[modelName] = this.define(modelName, attributes, options);
       this.$models[modelName] = _.defaultsDeep(this.$models[modelName], target);
+
+      if (this.$models[modelName].associate) {
+        this.$models[modelName].associate();
+      }
     }
     return this.$models[modelName];
   }
