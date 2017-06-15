@@ -35,4 +35,18 @@ export class ResponseService extends Service {
     response.write(result.body);
     response.end();
   }
+
+  static renderError(code, errors, message) {
+    return {
+      body: JSON.stringify({
+        code: code,
+        message: message,
+        errors: errors
+      }),
+      headers: {
+        'Content-type': ResponseService.types.json
+      },
+      status: code
+    };
+  }
 }
