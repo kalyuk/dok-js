@@ -1,20 +1,10 @@
-export const Context = {
-  url: '',
-  headers: {},
-  method: '',
-  body: '',
-  content: {
-    status: 200,
+export function createContext(ctx) {
+  return Object.assign({
+    body: '',
+    content: '',
     headers: {},
-    body: ''
-  },
-  route: {
-    method: '',
-    moduleName: '',
-    controllerName: '',
-    actionName: '',
-    params: {},
-    keyParams: [],
-    url: ''
-  }
-};
+    url: '',
+    route: null,
+    method: ''
+  }, ctx);
+}

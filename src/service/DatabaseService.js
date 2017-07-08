@@ -1,16 +1,15 @@
-import {Service} from './Service';
-import {SequelizeProvider} from '../providers/SequelizeProvider';
+import {Service} from '../base/Service';
+import {Sequelize} from 'sequelize';
 
 export class DatabaseService extends Service {
-
-  instances = {};
+  _instances = {};
 
   init() {
     super.init();
     Object.keys(this.config.instances).forEach((instanceName) => {
       switch (this.config.instances[instanceName].provider) {
         default:
-          this.instances[instanceName] = new SequelizeProvider(
+          this._instances[instanceName] = new Sequelize(
             this.config.instances[instanceName].database,
             this.config.instances[instanceName].username,
             this.config.instances[instanceName].password,
@@ -20,7 +19,6 @@ export class DatabaseService extends Service {
   }
 
   getInstance(instanceName) {
-    return this.instances[instanceName];
+    return this._instances[instanceName];
   }
-
 }

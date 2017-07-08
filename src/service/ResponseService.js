@@ -1,7 +1,9 @@
 import {Service} from '../base/Service';
-import * as _ from 'lodash';
+import {defaultsDeep} from 'lodash';
+
 
 export class ResponseService extends Service {
+
   static types = {
     html: 'text/html',
     json: 'application/json'
@@ -16,15 +18,28 @@ export class ResponseService extends Service {
     status: 200
   };
 
-  // TODO сделать проверку 500 ошибки
-  render(response, ctx) {
-    const result = _.defaultsDeep(ctx.content, this.config);
+  static renderError(code, errors, message) {
+    return {
+      body: JSON.stringify({
+        code,
+        errors,
+        message
+      }),
+      headers: {
+        'Content-type': ResponseService.types.json
+      },
+      status: code
+    };
+  }
+
+  render(response, content) {
+    const result = defaultsDeep(content, this.config);
 
     Object.keys(result.headers || {}).forEach((headerName) => {
       if (typeof result.headers[headerName] === 'string') {
         response.setHeader(headerName, result.headers[headerName]);
       } else {
-        result.headers[headerName].forEach((data) => {
+        (result.headers[headerName]).forEach((data) => {
           response.setHeader(headerName, data);
         });
       }
@@ -34,19 +49,5 @@ export class ResponseService extends Service {
     response.setHeader('Content-Length', Buffer.byteLength(result.body).toString());
     response.write(result.body);
     response.end();
-  }
-
-  static renderError(code, errors, message) {
-    return {
-      body: JSON.stringify({
-        code: code,
-        message: message,
-        errors: errors
-      }),
-      headers: {
-        'Content-type': ResponseService.types.json
-      },
-      status: code
-    };
   }
 }

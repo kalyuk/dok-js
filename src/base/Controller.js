@@ -1,14 +1,19 @@
 export class Controller {
+  $module = null;
+
+  init(module) {
+    this.$module = module;
+  }
 
   getBehaviors() {
     return [];
   }
 
-  init(module) {
-    this.module = module;
-  }
-
-  $inject() {
-
+  render(status, body) {
+    return {
+      body,
+      headers: {},
+      status
+    };
   }
 }

@@ -1,26 +1,30 @@
 import {Module} from './Module';
-import {setApplication} from '../../index';
-import * as _ from 'lodash';
-import {LoggerService} from './LoggerService';
-import {RouterService} from './RouterService';
-import {DatabaseService} from './DatabaseService';
-import {getFnParamNames} from '../helpers/fn';
+import {defaultsDeep} from 'lodash';
+import {CoreError} from './CoreError';
+import {RouteService} from '../service/RouteService';
+import {setApplication} from '../index';
+import {LoggerService} from '../service/LoggerService';
+import {inject} from '../helpers/inject';
+import {DatabaseService} from '../service/DatabaseService';
+// import {SecurityService} from '../services/SecurityService';
+// import {JwtService} from '../services/JwtService';*/
 
 export class Application extends Module {
-
   static options = {
     services: {
       DatabaseService: {
         func: DatabaseService
       },
-      RouterService: {
-        func: RouterService
-      },
       LoggerService: {
         func: LoggerService
+      },
+      RouteService: {
+        func: RouteService
       }
     }
   };
+
+  config = {};
 
   arguments = {
     env: 'development',
@@ -28,7 +32,7 @@ export class Application extends Module {
   };
 
   constructor(configPath) {
-    super({});
+    super();
     setApplication(this);
 
     process.argv.forEach((val) => {
@@ -36,33 +40,26 @@ export class Application extends Module {
       this.arguments[tmp[0]] = tmp[1];
     });
 
-    const CONFIGURATIONS = require(configPath).default();
+    const configurations = require(configPath).default();
 
-    this.config = _.defaultsDeep(CONFIGURATIONS.default, this.config);
+    const config = defaultsDeep(configurations[this.arguments.env] || {}, configurations.default);
 
-    if (CONFIGURATIONS[this.arguments.env]) {
-      this.config = _.defaultsDeep(CONFIGURATIONS[this.arguments.env], this.config);
-    }
-  }
-
-  isDevMode() {
-    return this.arguments.env === 'development';
+    this.$configure(config);
   }
 
   get(type, name) {
     if (!this.config[type]) {
-      throw new Error(`${type}, not resolve`);
+      throw new CoreError(500, `${type}, not resolve`);
     }
 
     if (!this.config[type][name]) {
-      throw new Error(`${type}: ${name},  not resolve`);
+      throw new CoreError(500, `${type}: ${name},  not resolve`);
     }
 
     if (!this.config[type][name].$instance) {
-
       if (!this.config[type][name].func) {
         if (!this.config[type][name].path) {
-          throw new Error(`${type}: ${name},  undefined`);
+          throw new CoreError(500, `${type}: ${name},  undefined`);
         }
 
         const NAME = this.config[type][name].path.split('/').pop();
@@ -70,14 +67,12 @@ export class Application extends Module {
       }
 
       const INSTANCE = this.config[type][name].func;
-      this.config[type][name].$instance = new INSTANCE(this.config[type][name].options || {});
-      const args = [];
-      getFnParamNames(this.config[type][name].$instance.$inject).forEach(serviceName => {
-        if (serviceName && serviceName.length) {
-          args.push(this.getService(serviceName));
-        }
-      });
-      this.config[type][name].$instance.$inject(...args);
+
+      const args = inject(INSTANCE);
+
+      this.config[type][name].$instance = new INSTANCE(...args);
+
+      this.config[type][name].$instance.$configure(this.config[type][name].options || {});
       this.config[type][name].$instance.init();
     }
 
@@ -95,13 +90,8 @@ export class Application extends Module {
     return this.get('modules', name);
   }
 
-  log(type, ...args) {
-    this.getService('LoggerService').render(type, ...args);
-  }
-
   runRoute(ctx) {
-    this.getService('RouterService').matchRoute(ctx);
-    const module = this.getModule(ctx.route.moduleName || this.getId());
-    return module.runAction(ctx);
+    this.getService('RouteService').matchRoute(ctx);
+    return this.getModule(ctx.route.moduleName || this.getId()).runAction(ctx);
   }
 }

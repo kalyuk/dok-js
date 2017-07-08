@@ -1,4 +1,4 @@
-import {Service} from './Service';
+import {Service} from '../base/Service';
 
 export const LOG_LEVEL = {
   DEBUG: 0,
@@ -16,8 +16,7 @@ export class LoggerService extends Service {
 
   render(type, ...args) {
     if (this.config.logLevel <= type) {
-      console.log(...args); // eslint-disable-line
+      console.log.apply(console, args);
     }
   }
-
 }

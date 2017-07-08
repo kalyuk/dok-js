@@ -1,15 +1,25 @@
-import sequelize from 'sequelize';
-import {SequelizeModel} from '../../../decorators/SequelizeModel';
+import {DataTypes} from 'sequelize';
+import {defineModel} from '../../../index';
 
-@SequelizeModel({
+export default defineModel({
   instance: {
-    type: sequelize.DataTypes.STRING
+    type: DataTypes.STRING
   },
   name: {
-    type: sequelize.DataTypes.STRING
+    type: DataTypes.STRING
   }
 }, {
-  tableName: 'tbl_migration'
-})
-export class Migration {
-}
+  db: 'db',
+  modelName: 'Migration',
+  indexes: [
+    {
+      fields: ['instance', 'name'],
+      unique: true
+    }
+  ],
+  tableName: 'tbl_migration',
+  name: {
+    singular: 'migration',
+    plural: 'migrations'
+  }
+});

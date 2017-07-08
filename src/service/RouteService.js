@@ -1,8 +1,10 @@
-import {Service} from './Service';
+import {Service} from '../base/Service';
+import {CoreError} from '../base/CoreError';
 
-export class RouterService extends Service {
+export class RouteService extends Service {
+
   static options = {
-    routes: []
+    routes: {}
   };
 
   init() {
@@ -54,9 +56,7 @@ export class RouterService extends Service {
     });
 
     if (!ctx.route) {
-      const error = new Error(`Route: ${ctx.method} ${ctx.url} not found`);
-      error.code = 404;
-      throw error;
+      throw new CoreError(404, `Route: ${ctx.method} ${ctx.url} not found`);
     }
   }
 }
