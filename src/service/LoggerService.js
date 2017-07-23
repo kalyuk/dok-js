@@ -16,7 +16,7 @@ export class LoggerService extends Service {
 
   render(type, ...args) {
     if (this.config.logLevel <= type) {
-      console.log.apply(console, args);
+      console.log.apply(console, args); // eslint-disable-line
     }
   }
 }

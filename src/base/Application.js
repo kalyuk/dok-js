@@ -6,11 +6,13 @@ import {setApplication} from '../index';
 import {LoggerService} from '../service/LoggerService';
 import {inject} from '../helpers/inject';
 import {DatabaseService} from '../service/DatabaseService';
+import {RedisService} from '../service/RedisService';
 // import {SecurityService} from '../services/SecurityService';
 // import {JwtService} from '../services/JwtService';*/
 
 export class Application extends Module {
   static options = {
+    boot: [],
     services: {
       DatabaseService: {
         func: DatabaseService
@@ -20,6 +22,9 @@ export class Application extends Module {
       },
       RouteService: {
         func: RouteService
+      },
+      RedisService: {
+        func: RedisService
       }
     }
   };
@@ -93,5 +98,12 @@ export class Application extends Module {
   runRoute(ctx) {
     this.getService('RouteService').matchRoute(ctx);
     return this.getModule(ctx.route.moduleName || this.getId()).runAction(ctx);
+  }
+
+  init() {
+    super.init();
+    this.config.boot.forEach((serviceName) => {
+      this.getService(serviceName);
+    });
   }
 }

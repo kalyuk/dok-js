@@ -27,6 +27,7 @@ export class ConsoleApplication extends Application {
   };
 
   async run() {
+    super.init();
     const ctx = {
       headers: {},
       method: 'COMMAND',
