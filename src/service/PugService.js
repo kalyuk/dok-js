@@ -27,7 +27,7 @@ export class PugService extends Service {
   }
 
   render(pathTemplate, data = {}) {
-    const fullPath = path.join(this.config.baseDir, 'view', pathTemplate + '.pug');
+    const fullPath = path.join(this.config.baseDir, 'views', pathTemplate + '.pug');
     const compiledFunction = pug.compileFile(fullPath, this.config.pugOptions);
 
     const params = _.defaultsDeep(data, this.config.fields);
