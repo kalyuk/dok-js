@@ -1,4 +1,4 @@
-import Service from '../base/Service';
+import {Service} from '../base/Service';
 import pug from 'pug';
 import _ from 'lodash';
 
