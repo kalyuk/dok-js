@@ -10,7 +10,6 @@ export class PugService extends Service {
       cache: true,
       compileDebug: false,
       debug: false,
-      basedir: '',
       inlineRuntimeFunctions: true
     },
     fields: {
@@ -22,8 +21,13 @@ export class PugService extends Service {
     viewPath: ''
   };
 
+  init() {
+    super.init();
+    this.config.baseDir = path.join(this.config.viewPath, this.config.template);
+  }
+
   render(pathTemplate, data = {}) {
-    const fullPath = path.join(this.config.viewPath, this.config.template, pathTemplate + '.pug');
+    const fullPath = path.join(this.config.baseDir, 'view', pathTemplate + '.pug');
     const compiledFunction = pug.compileFile(fullPath, this.config.pugOptions);
 
     const params = _.defaultsDeep(data, this.config.fields);

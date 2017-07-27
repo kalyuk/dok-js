@@ -26,7 +26,7 @@ export class ResponseService extends Service {
         message
       }),
       headers: {
-        'Content-type': ResponseService.types.json
+        'Content-Type': ResponseService.types.json
       },
       status: code
     };

@@ -7,7 +7,13 @@ export class WebController extends Controller {
 
   renderPUG(status, template, data) {
     const viewPath = path.join(this.$module.getId(), this.id, template);
-    return this.render(status, getService('PugService').render(viewPath, data));
+    return this.render(
+      status,
+      getService('PugService').render(viewPath, data),
+      {
+        'Content-Type': ResponseService.types.html
+      }
+    );
   }
 
   renderJSON(status, json, code = 'success', message = false) {
@@ -26,7 +32,7 @@ export class WebController extends Controller {
     return {
       body: JSON.stringify(data),
       headers: {
-        'Content-type': ResponseService.types.json
+        'Content-Type': ResponseService.types.json
       },
       status
     };
