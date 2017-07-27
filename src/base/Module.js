@@ -42,7 +42,7 @@ export class Module extends Component {
         const args = inject(INSTANCE);
 
         this.$controllers[controllerName] = new INSTANCE(...args);
-        this.$controllers[controllerName].init(this);
+        this.$controllers[controllerName].init(this, controllerName);
 
       } else {
         throw new CoreError(500, `Controller ${controllerName} in ${this.getId()} not found`);

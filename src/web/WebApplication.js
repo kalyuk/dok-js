@@ -1,6 +1,7 @@
 import {Application} from '../base/Application';
 import {HttpService} from '../service/HttpService';
 import {ResponseService} from '../service/ResponseService';
+import {PugService} from '../service/PugService';
 
 export class WebApplication extends Application {
   static options = {
@@ -10,6 +11,9 @@ export class WebApplication extends Application {
       },
       ResponseService: {
         func: ResponseService
+      },
+      PugService: {
+        func: PugService
       }
     }
   };

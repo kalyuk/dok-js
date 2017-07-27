@@ -36,7 +36,10 @@ export class RedisService extends Service {
 
         try {
           const result = await getApplication().runRoute(ctx);
-          this._clientPub.publish(channel, JSON.stringify(result));
+          this._clientPub.publish(data.channel || channel, JSON.stringify({
+            KEY: data.KEY,
+            payload: result
+          }));
         } catch (e) {
           this.loggerService.render(e.code, e.message);
         }

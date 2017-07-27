@@ -1,7 +1,8 @@
 export class Controller {
   $module = null;
 
-  init(module) {
+  init(module, id) {
+    this.id = id;
     this.$module = module;
   }
 
@@ -9,10 +10,10 @@ export class Controller {
     return [];
   }
 
-  render(status, body) {
+  render(status, body, headers = {}) {
     return {
       body,
-      headers: {},
+      headers,
       status
     };
   }

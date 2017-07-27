@@ -7,6 +7,7 @@ import {LoggerService} from '../service/LoggerService';
 import {inject} from '../helpers/inject';
 import {DatabaseService} from '../service/DatabaseService';
 import {RedisService} from '../service/RedisService';
+import {SecurityService} from '../service/SecurityService';
 // import {SecurityService} from '../services/SecurityService';
 // import {JwtService} from '../services/JwtService';*/
 
@@ -19,6 +20,9 @@ export class Application extends Module {
       },
       LoggerService: {
         func: LoggerService
+      },
+      SecurityService: {
+        func: SecurityService
       },
       RouteService: {
         func: RouteService
