@@ -1,6 +1,7 @@
 import {Service} from '../base/Service';
 import pug from 'pug';
 import _ from 'lodash';
+import path from 'path';
 
 export class PugService extends Service {
 
@@ -22,7 +23,8 @@ export class PugService extends Service {
   };
 
   render(pathTemplate, data = {}) {
-    const compiledFunction = pug.compileFile(pathTemplate + '.pug', this.config.pugOptions);
+    const fullPath = path.join(this.config.viewPath, this.config.template, pathTemplate + '.pug');
+    const compiledFunction = pug.compileFile(fullPath, this.config.pugOptions);
 
     const params = _.defaultsDeep(data, this.config.fields);
 
