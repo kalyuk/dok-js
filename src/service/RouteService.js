@@ -1,5 +1,6 @@
 import {Service} from '../base/Service';
 import {CoreError} from '../base/CoreError';
+import {getApplication} from '../index';
 
 export class RouteService extends Service {
 
@@ -50,7 +51,7 @@ export class RouteService extends Service {
 
           ctx.route.actionName = routes[urlKey].actionName || ctx.route.params.actionName;
           ctx.route.controllerName = routes[urlKey].controllerName || ctx.route.params.controllerName;
-          ctx.route.moduleName = routes[urlKey].moduleName || ctx.route.params.moduleName;
+          ctx.route.moduleName = routes[urlKey].moduleName || ctx.route.params.moduleName || getApplication().getId();
 
           return true;
         }

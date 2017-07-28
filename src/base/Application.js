@@ -66,11 +66,11 @@ export class Application extends Module {
     }
 
     if (!this.config[type][name].$instance) {
-      if (!this.config[type][name].func) {
-        if (!this.config[type][name].path) {
-          throw new CoreError(500, `${type}: ${name},  undefined`);
-        }
+      if (!this.config[type][name].path && !this.config[type][name].func) {
+        throw new CoreError(500, `${type}: ${name},  undefined`);
+      }
 
+      if (this.config[type][name].path) {
         const NAME = this.config[type][name].path.split('/').pop();
         this.config[type][name].func = require(this.config[type][name].path)[NAME];
       }
@@ -99,8 +99,8 @@ export class Application extends Module {
     return this.get('modules', name);
   }
 
-  runRoute(ctx) {
-    this.getService('RouteService').matchRoute(ctx);
+  async runRoute(ctx) {
+    await this.getService('RouteService').matchRoute(ctx);
     return this.getModule(ctx.route.moduleName || this.getId()).runAction(ctx);
   }
 
