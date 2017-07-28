@@ -89,7 +89,10 @@ export class HttpService extends Service {
         };
       })
       .then((data) => {
-        this.responseService.render(response, data);
+        if (data.filePath) {
+          return this.responseService.renderFile(response, data);
+        }
+        return this.responseService.render(response, data);
       });
   }
 }

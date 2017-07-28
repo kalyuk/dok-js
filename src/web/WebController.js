@@ -16,6 +16,14 @@ export class WebController extends Controller {
     );
   }
 
+  renderFile(filePath) {
+    return {
+      status: 200,
+      body: '',
+      filePath
+    };
+  }
+
   renderJSON(status, json, code = 'success', message = false) {
     const data = {};
 

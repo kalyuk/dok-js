@@ -17,7 +17,8 @@
     "babel-preset-es2017": "^6.22.0",
     "hashids": "^1.1.1",
     "lodash": "^4.17.4",
-    "mime-types": "^2.1.15",
+    "mime-db": "^1.29.0",
+    "mime-type": "^3.0.5",
     "pg": "^6.1.5",
     "pug": "^2.0.0-rc.2",
     "redis": "^2.7.1",
@@ -49,7 +50,7 @@
     "build": "babel src -d dist",
     "prepublish": "npm run build"
   },
-  "version": "0.3.28",
+  "version": "0.3.32",
   "directories": {
     "mian": "./dist"
   }

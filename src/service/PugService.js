@@ -2,6 +2,7 @@ import {Service} from '../base/Service';
 import pug from 'pug';
 import _ from 'lodash';
 import path from 'path';
+import {getApplication} from '../index';
 
 export class PugService extends Service {
 
@@ -31,6 +32,7 @@ export class PugService extends Service {
     const compiledFunction = pug.compileFile(fullPath, this.config.pugOptions);
 
     const params = _.defaultsDeep(data, this.config.fields);
+    params.env = getApplication().arguments.env;
 
     return compiledFunction(params);
   }

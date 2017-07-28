@@ -1,6 +1,11 @@
 import {Service} from '../base/Service';
 import {defaultsDeep} from 'lodash';
+import fs from 'fs';
+import path from 'path';
+import _mime from 'mime-type';
+import db from 'mime-db';
 
+const mime = _mime(db);
 
 export class ResponseService extends Service {
 
@@ -32,8 +37,50 @@ export class ResponseService extends Service {
     };
   }
 
+  renderFile(response, content) {
+    if (!fs.existsSync(content.filePath)) {
+      content.body = `File not found, ${content.filePath.split('/').pop()}`;
+      content.status = 404;
+      return this.render(response, content);
+    }
+
+    const ext = path.extname(content.filePath);
+    let type;
+    switch (ext) {
+      case 'eot':
+        type = 'application/vnd.ms-fontobject';
+        break;
+      case 'ttf':
+        type = 'application/octet-stream';
+        break;
+      case 'svg':
+        type = 'image/svg+xml';
+        break;
+      case 'woff':
+        type = 'application/font-woff';
+        break;
+      case 'woff2':
+        type = 'font/woff2';
+        break;
+      default:
+        type = mime.lookup(content.filePath);
+    }
+
+    response.writeHead(200, {'Content-Type': type});
+
+    fs.createReadStream(content.filePath).pipe(response);
+    return null;
+  }
+
   render(response, content) {
     const result = defaultsDeep(content, this.config);
+
+    if (result.status === 301 || result.status === 302) {
+      response.statusCode = result.status;
+      response.setHeader('Location', result.body);
+      response.setHeader('Content-Type', 'plain/text');
+      return response.end();
+    }
 
     Object.keys(result.headers || {}).forEach((headerName) => {
       if (typeof result.headers[headerName] === 'string') {
@@ -48,6 +95,6 @@ export class ResponseService extends Service {
     response.statusCode = result.status;
     response.setHeader('Content-Length', Buffer.byteLength(result.body).toString());
     response.write(result.body);
-    response.end();
+    return response.end();
   }
 }
