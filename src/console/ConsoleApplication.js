@@ -18,7 +18,8 @@ export class ConsoleApplication extends Application {
           routes: {
             'COMMAND migrate:<actionName:up|down|create>': {
               controllerName: 'index',
-              moduleName: 'migrate'
+              moduleName: 'migrate',
+              route: {}
             }
           }
         }

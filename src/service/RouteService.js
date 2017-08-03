@@ -40,9 +40,7 @@ export class RouteService extends Service {
       if (routes[urlKey].method === 'ALL' || routes[urlKey].method === ctx.method) {
         const match = ctx.url.match(routes[urlKey].regexp);
         if (match) {
-          ctx.route = {
-            params: {...routes[urlKey].params}
-          };
+          ctx.route.params = Object.assign(ctx.route.params || {}, {...routes[urlKey].params});
 
           routes[urlKey].keyParams.forEach((key, index) => {
             const value = match[index + 1];

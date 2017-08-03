@@ -3,6 +3,8 @@ import http from 'http';
 import {LOG_LEVEL} from './LoggerService';
 import {createContext} from '../base/Context';
 import {ResponseService} from './ResponseService';
+import {parse} from 'url';
+import q from 'querystring';
 
 export class HttpService extends Service {
   static options = {
@@ -69,11 +71,18 @@ export class HttpService extends Service {
   }
 
   execute(request, response, callback) {
+
+    const u = parse(request.url);
     const ctx = createContext({
       headers: request.headers,
       method: request.method,
-      url: request.url
+      url: u.pathname,
+      route: {}
     });
+
+    if (u.query) {
+      ctx.route.params = q.parse(u.query);
+    }
 
     this.readBody(ctx, request)
       .then(() => {
