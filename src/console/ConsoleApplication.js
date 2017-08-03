@@ -18,8 +18,7 @@ export class ConsoleApplication extends Application {
           routes: {
             'COMMAND migrate:<actionName:up|down|create>': {
               controllerName: 'index',
-              moduleName: 'migrate',
-              route: {}
+              moduleName: 'migrate'
             }
           }
         }
@@ -32,7 +31,8 @@ export class ConsoleApplication extends Application {
     const ctx = {
       headers: {},
       method: 'COMMAND',
-      url: this.arguments.route
+      url: this.arguments.route,
+      route: {}
     };
 
     const content = await this.runRoute(ctx);
