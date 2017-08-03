@@ -7,6 +7,7 @@ import {createContext} from '../base/Context';
 
 export class RedisService extends Service {
   static options = {
+    usePopSub: false,
     host: '127.0.0.1',
     port: '6379'
   };
@@ -21,30 +22,33 @@ export class RedisService extends Service {
   init() {
     super.init();
     this._client = this._createConnect('Main client');
-    this._clientSub = this._createConnect('Subscriber');
-    this._clientPub = this._createConnect('Publisher');
 
-    this._clientSub.on('message', async (channel, message) => {
-      const data = JSON.parse(message);
+    if (this.config.usePopSub) {
+      this._clientSub = this._createConnect('Subscriber');
+      this._clientPub = this._createConnect('Publisher');
 
-      if (data.url) {
-        const ctx = createContext({
-          method: 'QUEUE',
-          url: data.url,
-          body: data.body || {}
-        });
+      this._clientSub.on('message', async (channel, message) => {
+        const data = JSON.parse(message);
 
-        try {
-          const result = await getApplication().runRoute(ctx);
-          this._clientPub.publish(data.channel || channel, JSON.stringify({
-            KEY: data.KEY,
-            payload: result
-          }));
-        } catch (e) {
-          this.loggerService.render(e.code, e.message);
+        if (data.url) {
+          const ctx = createContext({
+            method: 'QUEUE',
+            url: data.url,
+            body: data.body || {}
+          });
+
+          try {
+            const result = await getApplication().runRoute(ctx);
+            this._clientPub.publish(data.channel || channel, JSON.stringify({
+              KEY: data.KEY,
+              payload: result
+            }));
+          } catch (e) {
+            this.loggerService.render(e.code, e.message);
+          }
         }
-      }
-    });
+      });
+    }
 
     this._clientSub.subscribe(getApplication().getId());
   }

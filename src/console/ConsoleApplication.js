@@ -1,6 +1,7 @@
 import {Application} from '../base/Application';
 import {ResponseConsoleService} from '../service/ResponseConsoleService';
 import {MigrateModule} from '../modules/migrate/MigrateModule';
+import {createContext} from '../base/Context';
 
 export class ConsoleApplication extends Application {
   static options = {
@@ -28,12 +29,11 @@ export class ConsoleApplication extends Application {
 
   async run() {
     super.init();
-    const ctx = {
+    const ctx = createContext({
       headers: {},
       method: 'COMMAND',
-      url: this.arguments.route,
-      route: {}
-    };
+      url: this.arguments.route
+    });
 
     const content = await this.runRoute(ctx);
 

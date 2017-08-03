@@ -3,7 +3,7 @@ import http from 'http';
 import {LOG_LEVEL} from './LoggerService';
 import {createContext} from '../base/Context';
 import {ResponseService} from './ResponseService';
-import {parse} from 'url';
+import {parse, URL} from 'url';
 import q from 'querystring';
 
 export class HttpService extends Service {
@@ -73,11 +73,12 @@ export class HttpService extends Service {
   execute(request, response, callback) {
 
     const u = parse(request.url);
+    const $url = new URL('http://' + request.headers.host);
     const ctx = createContext({
+      hostname: $url.hostname,
       headers: request.headers,
       method: request.method,
-      url: u.pathname,
-      route: {}
+      url: u.pathname
     });
 
     if (u.query) {
