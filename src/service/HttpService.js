@@ -78,7 +78,8 @@ export class HttpService extends Service {
       hostname: $url.hostname,
       headers: request.headers,
       method: request.method,
-      url: u.pathname
+      url: u.pathname,
+      ip: (request.headers['x-forwarded-for'] || '').split(',')[0]  || request.connection.remoteAddress
     });
 
     if (u.query) {

@@ -48,9 +48,8 @@ export class RedisService extends Service {
           }
         }
       });
+      this._clientSub.subscribe(getApplication().getId());
     }
-
-    this._clientSub.subscribe(getApplication().getId());
   }
 
   _createConnect(name) {
