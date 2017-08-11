@@ -50,7 +50,7 @@
     "build": "babel src -d dist",
     "prepublish": "npm run build"
   },
-  "version": "0.3.46",
+  "version": "0.3.47",
   "directories": {
     "mian": "./dist"
   }

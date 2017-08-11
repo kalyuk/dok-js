@@ -8,6 +8,7 @@ import {inject} from '../helpers/inject';
 import {DatabaseService} from '../service/DatabaseService';
 import {RedisService} from '../service/RedisService';
 import {SecurityService} from '../service/SecurityService';
+import path from 'path';
 // import {SecurityService} from '../services/SecurityService';
 // import {JwtService} from '../services/JwtService';*/
 
@@ -71,7 +72,7 @@ export class Application extends Module {
       }
 
       if (this.config[type][name].path) {
-        const NAME = this.config[type][name].path.split('/').pop();
+        const NAME = this.config[type][name].path.split(path.sep).pop();
         this.config[type][name].func = require(this.config[type][name].path)[NAME];
       }
 
