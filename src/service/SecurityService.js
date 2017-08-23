@@ -16,8 +16,8 @@ export class SecurityService extends Service {
   }
 
   getHash(string, options = {}) {
-    const algorithm = options.algorithm || this.algorithm;
-    const salt = options.salt || this.salt;
+    const algorithm = options.algorithm || this.config.algorithm;
+    const salt = options.salt || this.config.salt;
     const hash = crypto.createHmac(algorithm, salt);
     hash.update(string);
     return hash.digest('hex');
