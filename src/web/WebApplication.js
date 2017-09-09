@@ -3,6 +3,7 @@ import {HttpService} from '../service/HttpService';
 import {ResponseService} from '../service/ResponseService';
 import {PugService} from '../service/PugService';
 import {StaticModule} from '../modules/static/StaticModule';
+import {JwtService} from '../service/JwtService';
 
 export class WebApplication extends Application {
   static options = {
@@ -12,6 +13,9 @@ export class WebApplication extends Application {
       }
     },
     services: {
+      JwtService: {
+        func: JwtService
+      },
       HttpService: {
         func: HttpService
       },

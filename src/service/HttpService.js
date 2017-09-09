@@ -56,11 +56,15 @@ export class HttpService extends Service {
           }
         });
         request.on('end', () => {
-          switch (request.headers['content-type']) {
+          const type = request.headers['content-type'].split(';')[0];
+          switch (type) {
             case 'application/json':
               ctx.body = JSON.parse(body);
               break;
             default:
+              if (body && body.length) {
+                ctx.body = q.parse(body);
+              }
           }
           resolve();
         });
@@ -79,7 +83,7 @@ export class HttpService extends Service {
       headers: request.headers,
       method: request.method,
       url: u.pathname,
-      ip: (request.headers['x-forwarded-for'] || '').split(',')[0]  || request.connection.remoteAddress
+      ip: (request.headers['x-forwarded-for'] || '').split(',')[0] || request.connection.remoteAddress
     });
 
     if (u.query) {
@@ -91,12 +95,19 @@ export class HttpService extends Service {
         return callback(ctx);
       })
       .catch((e) => {
+        const body = {};
+        const status = e.code && Number.isInteger(e.code) ? e.code : 500;
+
+        body.code = status;
+        body.message = e.message;
+        body[status < 300 ? 'data' : 'errors'] = e.fields || {};
+
         return {
-          body: e.message,
+          body: JSON.stringify(body),
           headers: {
-            'Content-Type': ResponseService.types.html
+            'Content-Type': ResponseService.types.json
           },
-          status: e.code && Number.isInteger(e.code) ? e.code : 500
+          status
         };
       })
       .then((data) => {
