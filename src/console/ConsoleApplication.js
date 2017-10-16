@@ -38,5 +38,7 @@ export class ConsoleApplication extends Application {
     const content = await this.runRoute(ctx);
 
     this.getService('ResponseService').render(content);
+
+    process.exit();
   }
 }
