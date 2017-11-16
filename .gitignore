@@ -1,3 +1,9 @@
 .idea
 node_modules
-dist
+/base
+/console
+/helpers
+/modules
+/service
+/web
+/index.js

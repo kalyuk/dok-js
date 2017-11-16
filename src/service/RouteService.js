@@ -57,7 +57,7 @@ export class RouteService extends Service {
       return false;
     });
 
-    if (!ctx.route) {
+    if (!ctx.route.controllerName) {
       throw new CoreError(404, `Route: ${ctx.method} ${ctx.url} not found`);
     }
   }

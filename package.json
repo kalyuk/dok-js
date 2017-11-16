@@ -48,11 +48,8 @@
     "url": "git+https://github.com/kalyuk/dok-js.git"
   },
   "scripts": {
-    "build": "babel src -d dist",
+    "build": "babel src -d .",
     "prepublish": "npm run build"
   },
-  "version": "0.3.55",
-  "directories": {
-    "mian": "./dist"
-  }
+  "version": "0.4.0"
 }
